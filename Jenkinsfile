@@ -8,13 +8,13 @@ pipeline {
 
     environment {
         SONARQUBE = 'SonarQubeServer' // Nom configuré dans Jenkins > SonarQube config
-        SONAR_TOKEN = credentials('sonar-token-id') // Stocké dans Jenkins Credentials
+        SONAR_TOKEN = credentials('116540dd-2483-4126-89ad-c1c8a39d0b82') // Stocké dans Jenkins Credentials
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://your-repo-url.git', branch: 'main'
+                git url: 'https://github.com/FamaCoundoul/Projet_TER_Mono.git', branch: 'master'
             }
         }
 
