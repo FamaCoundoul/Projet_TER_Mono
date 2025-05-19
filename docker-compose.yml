@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  mysql-db-mono:
+    image: mysql:8
+    container_name: mysql-db-mono
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bd_ter
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data-mono:/var/lib/mysql
+
+  backend:
+    build: backend-mono/E-Commerce
+    container_name: ecom-mono
+    ports:
+      - "8070:8070"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db-mono:3306/bd_ter
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - mysql-db-mono
+
+  frontend:
+    build: frontend-mono/E-commerce-web
+    container_name: angular-frontend-mono
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data-mono:
