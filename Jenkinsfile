@@ -20,23 +20,29 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean install'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQubeConnection') {
-                    sh """
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=backend-mono \
-                        -Dsonar.projectName=Backend Mono \
-                        -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.login=$SONAR_TOKEN
-                    """
+                dir('backend-mono/E-Commerce') {
+                    sh 'mvn clean install'
                 }
             }
         }
+
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('backend-mono/E-Commerce') {
+                    withSonarQubeEnv('SonarQubeConnection') {
+                        sh """
+                            mvn sonar:sonar \
+                            -Dsonar.projectKey=backend-mono \
+                            -Dsonar.projectName=Backend Mono \
+                            -Dsonar.host.url=http://sonarqube:9000 \
+                            -Dsonar.login=$SONAR_TOKEN
+                        """
+                    }
+                }
+            }
+        }
+
     }
 
     post {
