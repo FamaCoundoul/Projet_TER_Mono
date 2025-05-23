@@ -35,7 +35,7 @@ pipeline {
                             mvn sonar:sonar \
                             -Dsonar.projectKey=backend-mono \
                             -Dsonar.projectName=Backend Mono \
-                            -Dsonar.host.url=http://localhost:9000 \
+                            -Dsonar.host.url=http://sonarqube:9000 \
                             -Dsonar.login=$SONAR_TOKEN
                         """
                     }
