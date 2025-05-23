@@ -7,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: bd_ter
     ports:
-      - "3306:3306"
+      - "3301:3306"
     volumes:
       - mysql-data-mono:/var/lib/mysql
 
@@ -23,6 +23,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     depends_on:
       - mysql-db-mono
+
 
   frontend:
     build: frontend-mono/E-commerce-web

@@ -6,7 +6,7 @@ RUN npm install && npm run build -- --project=E-commerce-web --configuration pro
 
 # NGINX
 FROM nginx:alpine
-COPY --from=build /app/dist/e-commerce-web /usr/share/nginx/html
+COPY --from=build /app/dist/e-commerce-web/browser /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
