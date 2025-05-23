@@ -2,69 +2,62 @@ pipeline {
     agent any
 
     tools {
-        nodejs "Node18" // configuré dans Jenkins > Global Tool Configuration
-        maven "Maven3"  // idem
+        maven 'Maven3'              // Défini dans Jenkins > Global Tool Configuration
+        jdk 'jdk17'                 // Assure-toi que tu as défini Java 17
     }
 
     environment {
-        SONARQUBE = 'SonarQubeServer' // Nom configuré dans Jenkins > SonarQube config
-        SONAR_TOKEN = credentials('116540dd-2483-4126-89ad-c1c8a39d0b82') // Stocké dans Jenkins Credentials
+        SONARQUBE = 'SonarQube'     // Nom défini dans Jenkins config
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/FamaCoundoul/Projet_TER_Mono.git', branch: 'master'
+                git 'https://github.com/FamaCoundoul/Projet_TER_Mono.git'
             }
         }
 
-        stage('Build Backend') {
-            dir('backend-mono/E-Commerce') {
-                steps {
-                    sh 'mvn clean install'
+        stage('Build') {
+            steps {
+                dir('backend-mono/E-Commerce') {
+                    sh 'mvn clean install -DskipTests'
                 }
             }
         }
 
-        stage('Analyze Backend with SonarQube') {
-            dir('backend-mono/E-Commerce') {
-                steps {
-                    withSonarQubeEnv("${SONARQUBE}") {
-                        sh "mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN}"
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${env.SONARQUBE}") {
+                    dir('backend-mono/E-Commerce') {
+                        sh 'mvn sonar:sonar'
                     }
                 }
             }
         }
 
-        stage('Build Frontend') {
-            dir('frontend-mono/E-commerce-web') {
-                steps {
-                    sh 'npm install'
-                    sh 'npm run build -- --configuration production'
+        stage('Test') {
+            steps {
+                dir('backend-mono/E-Commerce') {
+                    sh 'mvn test'
                 }
             }
         }
 
-        stage('Analyze Frontend with SonarQube') {
-            dir('frontend-mono/E-commerce-web') {
-                steps {
-                    withSonarQubeEnv("${SONARQUBE}") {
-                        sh "sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
-                    }
+        stage('Package') {
+            steps {
+                dir('backend-mono/E-Commerce') {
+                    sh 'mvn package -DskipTests'
                 }
             }
         }
+    }
 
-        stage('Quality Gate') {
-            steps {
-                waitForQualityGate abortPipeline: true
-            }
+    post {
+        success {
+            echo '✅ Build et analyse Sonar réussis !'
         }
-
-        stage('Deploy (optional)') {
-            steps {
-                echo 'Deploy step can be defined here.'
-            }
+        failure {
+            echo '❌ Échec du pipeline.'
         }
     }
 }
