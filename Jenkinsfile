@@ -2,62 +2,49 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven3'              // Défini dans Jenkins > Global Tool Configuration
-        jdk 'jdk17'                 // Assure-toi que tu as défini Java 17
+        maven 'Maven3'
+        jdk 'jdk17'
     }
 
     environment {
-        SONARQUBE = 'SonarQube'     // Nom défini dans Jenkins config
+        SONAR_TOKEN = credentials('ID-SonarQube') // ID du token dans Jenkins
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/FamaCoundoul/Projet_TER_Mono.git'
+                git url: 'https://github.com/FamaCoundoul/Projet_TER_Mono.git',
+                    credentialsId: 'ID-Github' // ← ton ID GitHub Jenkins ici
             }
         }
 
         stage('Build') {
             steps {
-                dir('backend-mono/E-Commerce') {
-                    sh 'mvn clean install -DskipTests'
-                }
+                sh 'mvn clean install'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv("${env.SONARQUBE}") {
-                    dir('backend-mono/E-Commerce') {
-                        sh 'mvn sonar:sonar'
-                    }
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                dir('backend-mono/E-Commerce') {
-                    sh 'mvn test'
-                }
-            }
-        }
-
-        stage('Package') {
-            steps {
-                dir('backend-mono/E-Commerce') {
-                    sh 'mvn package -DskipTests'
+                withSonarQubeEnv('SonarQubeConnection') {
+                    sh """
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=backend-mono \
+                        -Dsonar.projectName=Backend Mono \
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.login=$SONAR_TOKEN
+                    """
                 }
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Build et analyse Sonar réussis !'
-        }
         failure {
             echo '❌ Échec du pipeline.'
+        }
+        success {
+            echo '✅ Pipeline exécuté avec succès !'
         }
     }
 }
