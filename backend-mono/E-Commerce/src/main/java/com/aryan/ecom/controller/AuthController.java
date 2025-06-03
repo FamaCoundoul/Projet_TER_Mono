@@ -3,6 +3,7 @@ package com.aryan.ecom.controller;
 import java.util.Optional;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,8 @@ import com.aryan.ecom.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+
 
 @RestController
 @RequiredArgsConstructor
@@ -75,15 +78,16 @@ public class AuthController {
 
 	@PostMapping("/sign-up")
 	public ResponseEntity<?> signUpUser(@RequestBody SignupRequest signupRequest) {
-		log.info("Received sign-up request for email: {}", signupRequest.getEmail());
 
-		if (authService.hasUserWithEmail(signupRequest.getEmail())) {
-			log.warn("User already exists with email: {}", signupRequest.getEmail());
-			return new ResponseEntity<>("user already exists", HttpStatus.NOT_ACCEPTABLE);
-		}
+			// traitement métier
+			if (authService.hasUserWithEmail(signupRequest.getEmail())) {
+				log.warn("User already exists with email: {}", signupRequest.getEmail());
+				return new ResponseEntity<>("user already exists", HttpStatus.NOT_ACCEPTABLE);
+			}
 
-		UserDto userDto = authService.createUser(signupRequest);
-		log.info("User created with email: {}", signupRequest.getEmail());
-		return new ResponseEntity<>(userDto, HttpStatus.OK);
+			UserDto userDto = authService.createUser(signupRequest);
+			log.info("User created with email: {}", signupRequest.getEmail());
+			return new ResponseEntity<>(userDto, HttpStatus.OK);
+
 	}
 }

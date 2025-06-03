@@ -12,5 +12,6 @@ cp backend-mono/E-Commerce/target/E-Commerce-0.0.1-SNAPSHOT.jar .
 echo "🐳 Build Docker..."
 docker-compose build backend
 
+
 echo "🚀 Lancement..."
 docker-compose up

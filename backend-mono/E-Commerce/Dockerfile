@@ -7,4 +7,4 @@ COPY ./target/E-Commerce-0.0.1-SNAPSHOT.jar /app.jar
 COPY wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
-ENTRYPOINT ["/wait-for-it.sh", "mysql-db-mono:3306", "-t", "60", "--", "java", "-jar", "/app.jar"]
+ENTRYPOINT ["/wait-for-it.sh", "mysql-db-mono:3306", "-t", "1200", "--", "java", "-jar", "/app.jar"]

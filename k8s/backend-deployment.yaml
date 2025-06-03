@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecom-mono
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecom-mono
+  template:
+    metadata:
+      labels:
+        app: ecom-mono
+    spec:
+      containers:
+        - name: ecom-mono
+          image: ecom-mono:latest
+          ports:
+            - containerPort: 8070
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql-db-mono:3306/bd_ter
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecom-mono
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8070
+  selector:
+    app: ecom-mono
